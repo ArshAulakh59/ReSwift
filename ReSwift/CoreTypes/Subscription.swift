@@ -53,13 +53,17 @@ class SubscriptionBox<State>: Hashable {
         // and forward all new values to the subscriber.
         if let transformedSubscription = transformedSubscription {
             transformedSubscription.observer = { [unowned self] _, newState in
-                self.subscriber?._newState(state: newState as Any)
+                DispatchQueue.main.async {
+                    self.subscriber?._newState(state: newState as Any)
+                }
             }
         // If we haven't received a transformed subscription, we forward all values
         // from the original subscription.
         } else {
             originalSubscription.observer = { [unowned self] _, newState in
-                self.subscriber?._newState(state: newState as Any)
+                DispatchQueue.main.async {
+                    self.subscriber?._newState(state: newState as Any)
+                }
             }
         }
     }
@@ -68,7 +72,9 @@ class SubscriptionBox<State>: Hashable {
         // We pass all new values through the original subscription, which accepts
         // values of type `<State>`. If present, transformed subscriptions will
         // receive this update and transform it before passing it on to the subscriber.
-        self.originalSubscription.newValues(oldState: oldState, newState: newState)
+        DispatchQueue.main.async {
+            self.originalSubscription.newValues(oldState: oldState, newState: newState)
+        }
     }
 
     static func == (left: SubscriptionBox<State>, right: SubscriptionBox<State>) -> Bool {
@@ -88,7 +94,9 @@ public class Subscription<State> {
     {
         return Subscription<Substate> { sink in
             self.observer = { oldState, newState in
-                sink(oldState.map(selector) ?? nil, selector(newState))
+                DispatchQueue.main.async {
+                    sink(oldState.map(selector) ?? nil, selector(newState))
+                }
             }
         }
     }
@@ -101,7 +109,9 @@ public class Subscription<State> {
         // Provide the caller with a closure that will forward all values
         // to observers of this subscription.
         sink { old, new in
-            self.newValues(oldState: old, newState: new)
+            DispatchQueue.main.async {
+                self.newValues(oldState: old, newState: new)
+            }
         }
     }
 
@@ -132,15 +142,17 @@ public class Subscription<State> {
         -> Subscription<State> {
         return Subscription<State> { sink in
             self.observer = { oldState, newState in
-                switch (oldState, newState) {
-                case let (old?, new):
-                    if !isRepeat(old, new) {
-                        sink(oldState, newState)
-                    } else {
-                        return
+                DispatchQueue.main.async {
+                    switch (oldState, newState) {
+                        case let (old?, new):
+                            if !isRepeat(old, new) {
+                                sink(oldState, newState)
+                            } else {
+                                return
+                            }
+                        default:
+                            sink(oldState, newState)
                     }
-                default:
-                    sink(oldState, newState)
                 }
             }
         }
@@ -156,7 +168,9 @@ public class Subscription<State> {
 
     /// Sends new values over this subscription. Observers will be notified of these new values.
     func newValues(oldState: State?, newState: State) {
-        self.observer?(oldState, newState)
+        DispatchQueue.main.async {
+            self.observer?(oldState, newState)
+        }
     }
 }
 

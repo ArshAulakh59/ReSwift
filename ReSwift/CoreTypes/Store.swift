@@ -19,11 +19,13 @@ open class Store<State>: StoreType {
 
     private(set) public var state: State! {
         didSet {
-            subscriptions.forEach {
-                if $0.subscriber == nil {
-                    subscriptions.remove($0)
-                } else {
-                    $0.newValues(oldState: oldValue, newState: state)
+            DispatchQueue.main.async { [unowned self] in
+                subscriptions.forEach {
+                    if $0.subscriber == nil {
+                        subscriptions.remove($0)
+                    } else {
+                        $0.newValues(oldState: oldValue, newState: state)
+                    }
                 }
             }
         }
@@ -106,7 +108,9 @@ open class Store<State>: StoreType {
         subscriptions.update(with: subscriptionBox)
 
         if let state = self.state {
-            originalSubscription.newValues(oldState: nil, newState: state)
+            DispatchQueue.main.async {
+                originalSubscription.newValues(oldState: nil, newState: state)
+            }
         }
     }
 
