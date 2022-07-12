@@ -22,11 +22,11 @@ open class Store<State>: StoreType {
 
     private(set) public var state: State! {
         didSet {
-            DispatchQueue.main.async { [unowned self] in
-                subscriptions.forEach {
+            DispatchQueue.main.async { [weak self] in
+                self?.subscriptions.forEach {
                     if $0.subscriber == nil {
-                        subscriptions.remove($0)
-                    } else {
+                        self?.subscriptions.remove($0)
+                    } else if let state = self?.state {
                         $0.newValues(oldState: oldValue, newState: state)
                     }
                 }

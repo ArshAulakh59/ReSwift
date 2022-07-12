@@ -23,8 +23,8 @@ extension StoreSubscriber {
     // swiftlint:disable:next identifier_name
     public func _newState(state: Any) {
         if let typedState = state as? StoreSubscriberStateType {
-            DispatchQueue.main.async { [unowned self] in
-                self.newState(state: typedState)
+            DispatchQueue.main.async { [weak self] in
+                self?.newState(state: typedState)
             }
         }
     }
