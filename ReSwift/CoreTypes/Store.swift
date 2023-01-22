@@ -225,7 +225,8 @@ open class Store<State>: StoreType {
 // MARK: Skip Repeats for Equatable States
 
 extension Store {
-    open func subscribe<SelectedState: Equatable, S: StoreSubscriber>(
+    
+    public func subscribe<SelectedState: Equatable, S: StoreSubscriber>(
         _ subscriber: S, transform: ((Subscription<State>) -> Subscription<SelectedState>)?
         ) where S.StoreSubscriberStateType == SelectedState
     {
@@ -241,7 +242,8 @@ extension Store {
 }
 
 extension Store where State: Equatable {
-    open func subscribe<S: StoreSubscriber>(_ subscriber: S)
+    
+    public func subscribe<S: StoreSubscriber>(_ subscriber: S)
         where S.StoreSubscriberStateType == State {
             guard subscriptionsAutomaticallySkipRepeats else {
                 subscribe(subscriber, transform: nil)
