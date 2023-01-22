@@ -15,6 +15,7 @@
 /// The box subscribes either to the original subscription, or if available to the transformed
 /// subscription and passes any values that come through this subscriptions to the subscriber.
 
+import UIKit
 import Foundation
 
 class SubscriptionBox<State>: Hashable {

@@ -14,6 +14,7 @@
  argument.
  */
 
+import UIKit
 import Foundation
 
 open class Store<State>: StoreType {

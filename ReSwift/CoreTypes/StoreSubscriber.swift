@@ -6,6 +6,7 @@
 //  Copyright © 2015 ReSwift Community. All rights reserved.
 //
 
+import UIKit
 import Foundation
 
 public protocol AnyStoreSubscriber: AnyObject {
